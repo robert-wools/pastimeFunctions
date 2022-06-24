@@ -52,16 +52,31 @@ exports.createUser = functions.auth.user().onCreate((data) => {
       title: data.displayName,
       subtitle: "",
       img: data.photoURL,
-      dark: false,
       email: data.email,
-      lang: "eng",
-      token: "",
-      customer: "",
     },
-    balance: 0, points: 0,
+    settings: {
+      lang: 'en',
+      dark: false,
+      location: '',
+    },
+    meta: {
+      sports: {
+        spotlight: '',
+        org: '',
+        subOrg: '',
+      },
+    },
+    finance: {
+      balance: 0,
+      points: 0,
+      customer: '',
+      account: '',
+      last4: '',
+      icon: '',
+    },
     locations: [], perks: [], milestones: [], connected: [],
   };
-  userRef.doc(data.uid).set(user);
+  userRef.doc(data.uid).set(user, {merge: true});
   return createCustomer(user);
 });
 
@@ -297,7 +312,7 @@ function createCustomer(doc:userDoc) {
     description: "My First Test Customer (created for API docs)",
   }).then((x:any) => {
     console.log(x.id);
-    doc.details.customer = x.id;
+    doc.finance.customer = x.id;
     userRef.doc(doc.details.id).set(doc, {merge: true});
       return true;
   });
